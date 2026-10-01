@@ -2,9 +2,21 @@ name: Tests
 
 on:
   push:
-    paths-ignore:
-      - "log/**"
+    paths:
+      - ".github/workflows/tests.yml"
+      - "**/*.py"
+      - "**/*.html"
+      - "**/*.css"
+      - "**/*.js"
+      - "!log/**"
   pull_request:
+    paths:
+      - ".github/workflows/tests.yml"
+      - "**/*.py"
+      - "**/*.html"
+      - "**/*.css"
+      - "**/*.js"
+      - "!log/**"
   workflow_dispatch:
 
 permissions:
