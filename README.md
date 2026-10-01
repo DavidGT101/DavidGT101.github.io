@@ -75,18 +75,39 @@ Press `Ctrl+C` in the terminal to stop the server.
 
 ## **🚀 Agent Inspector Setup (Optional)**
 
-This workspace includes an HTTP server entrypoint for local debugging with AI Toolkit Agent Inspector.
+This workspace includes an HTTP server entrypoint for local debugging with AI Toolkit Agent Inspector. The VS Code tasks start the server through `debugpy`, open the inspector on port `8088`, and attach the debugger on port `5679`.
 
-1. Install the workspace dependencies into the local environment:
+1. Create the workspace virtual environment if it does not already exist:
+
+```powershell
+python -m venv .venv
+```
+
+2. Install the workspace dependencies into the local environment:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install --pre -r requirements.txt
 ```
 
-2. Launch the app from VS Code with the `Debug TaillightSim HTTP Server` configuration.
+3. Install and enable the VS Code extension that provides AI Toolkit Agent Inspector.
 
-3. The simulator is served by `taillight_server.py` on all interfaces (`0.0.0.0:8088`).
-   Open `http://<your-lan-ip>:8088` from other devices on the same network.
+4. In VS Code, open **Run and Debug** and start the `Debug TaillightSim HTTP Server` configuration. Its pre-launch task starts the server and opens Agent Inspector automatically.
+
+5. The simulator is served by `taillight_server.py` on all interfaces (`0.0.0.0:8088`). Open `http://127.0.0.1:8088` locally or `http://<your-lan-ip>:8088` from another device on the same network.
+
+Stop the session from VS Code to terminate the server and inspector tasks.
+
+## **✅ Automated Tests**
+
+GitHub Actions runs the Selenium smoke tests on Ubuntu for every push, pull request, and manual workflow dispatch. Pushes that only update `log/` are ignored to prevent the test-log commit from starting another run.
+
+Run the same headless Chrome checks locally from the project root:
+
+```powershell
+.\.venv\Scripts\python.exe selenium_taillight_smoke.py --headless --browsers chrome
+```
+
+After a push, the workflow replaces the previous file in `log/` with a log named for the commit, such as `log/2317ad4.log`.
 
 ## **🗺️ Roadmap**
 
