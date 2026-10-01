@@ -12,6 +12,20 @@ test_mobile_controls_and_long_presses (__main__.MobileTouchInteractionsTest_chro
 [mobile] starting built-in self-tests
 [mobile] built-in self-tests passed
 ok
+[desktop:firefox] setting up browser session
+test_keyboard_bindings_and_reactions (__main__.DesktopKeyboardReactionsTest_firefox.test_keyboard_bindings_and_reactions) ... [desktop:firefox] test running
+[desktop] checking keyboard interactions
+[desktop] keyboard interactions complete
+[desktop] starting built-in self-tests
+[desktop] built-in self-tests passed
+ok
+[mobile:firefox] setting up browser session
+test_mobile_controls_and_long_presses (__main__.MobileTouchInteractionsTest_firefox.test_mobile_controls_and_long_presses) ... [mobile:firefox] test running
+[mobile] checking touch interactions
+[mobile] touch interactions complete
+[mobile] starting built-in self-tests
+[mobile] built-in self-tests passed
+ok
 test_headless_chrome_stress (__main__.HeadlessChromeStressTest.test_headless_chrome_stress) ... [stress] test running
 [stress] launching 5 headless Chrome sessions
 [stress:1] starting headless Chrome session
@@ -19,16 +33,16 @@ test_headless_chrome_stress (__main__.HeadlessChromeStressTest.test_headless_chr
 [stress:3] starting headless Chrome session
 [stress:4] starting headless Chrome session
 [stress:5] starting headless Chrome session
+[stress:3] running desktop checks
+[desktop] checking keyboard interactions
 [stress:4] running desktop checks
 [desktop] checking keyboard interactions
 [stress:2] running desktop checks
 [desktop] checking keyboard interactions
-[stress:1] running desktop checks
-[desktop] checking keyboard interactions
-[stress:3] running desktop checks
-[desktop] checking keyboard interactions
 [stress:5] running desktop checks
 [desktop] checking keyboard interactions
+[stress:1] running desktop checks
+[desktop] checking keyboard interactions
 [desktop] keyboard interactions complete
 [desktop] starting built-in self-tests
 [desktop] keyboard interactions complete
@@ -39,21 +53,21 @@ test_headless_chrome_stress (__main__.HeadlessChromeStressTest.test_headless_chr
 [desktop] starting built-in self-tests
 [desktop] keyboard interactions complete
 [desktop] starting built-in self-tests
-[desktop] built-in self-tests passed
-[stress:4] completed
 [desktop] built-in self-tests passed
 [stress:5] completed
 [desktop] built-in self-tests passed
+[stress:3] completed
+[desktop] built-in self-tests passed
 [stress:2] completed
 [desktop] built-in self-tests passed
-[stress:3] completed
+[stress:4] completed
 [desktop] built-in self-tests passed
 [stress:1] completed
 [stress] all headless Chrome sessions passed
 ok
 
 ----------------------------------------------------------------------
-Ran 3 tests in 45.110s
+Ran 5 tests in 98.326s
 
 OK
 
