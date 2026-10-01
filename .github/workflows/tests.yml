@@ -1,0 +1,63 @@
+name: Tests
+
+on:
+  push:
+    paths-ignore:
+      - "log/**"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  selenium-smoke:
+    runs-on: ubuntu-26.04-arm
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+
+      - name: Run Selenium smoke tests
+        id: tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          mkdir -p log
+          rm -f log/*.log
+          log_file="log/${GITHUB_SHA:0:7}.log"
+
+          set +e
+          python selenium_taillight_smoke.py --headless --browsers chrome 2>&1 | tee "$log_file"
+          test_status=${PIPESTATUS[0]}
+          printf '\nTest exit code: %s\n' "$test_status" >> "$log_file"
+          exit "$test_status"
+
+      - name: Commit latest test log
+        if: always() && github.event_name == 'push'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A log
+
+          if git diff --cached --quiet; then
+            echo "No test log changes to commit."
+            exit 0
+          fi
+
+          git commit -m "ci: update test log for ${GITHUB_SHA:0:7}"
+          git push
+
+      - name: Fail workflow when tests fail
+        if: steps.tests.outcome == 'failure'
+        run: exit 1
