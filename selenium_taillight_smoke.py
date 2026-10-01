@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import atexit
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
 from pathlib import Path
 import socket
 import subprocess
@@ -199,9 +200,16 @@ def build_chrome_options(*, mobile: bool, headless: bool):
 
     options = ChromeOptions()
 
+    chrome_binary = os.environ.get("CHROME_BINARY")
+    if chrome_binary:
+        options.binary_location = chrome_binary
+
     if headless:
         options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
+    if os.environ.get("CI"):
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
     options.add_argument("--window-size=1440,1100")
 
     if mobile:
@@ -533,6 +541,10 @@ def main() -> int:
 
     try:
         result = run_with_headed_fallback()
+        executed_tests = result.testsRun - len(result.skipped)
+        if executed_tests == 0:
+            announce("[runner] no tests executed; all tests were skipped")
+            return 1
         return 0 if result.wasSuccessful() else 1
     finally:
         stop_started_server()
