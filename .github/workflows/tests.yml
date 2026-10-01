@@ -49,7 +49,7 @@ jobs:
           log_file="log/${GITHUB_SHA:0:7}.log"
 
           set +e
-          python selenium_taillight_smoke.py --headless --browsers chrome 2>&1 | tee "$log_file"
+          python selenium_taillight_smoke.py --headless --browsers chrome,firefox 2>&1 | tee "$log_file"
           test_status=${PIPESTATUS[0]}
           printf '\nTest exit code: %s\n' "$test_status" >> "$log_file"
           exit "$test_status"
