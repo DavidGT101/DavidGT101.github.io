@@ -33,16 +33,16 @@ test_headless_chrome_stress (__main__.HeadlessChromeStressTest.test_headless_chr
 [stress:3] starting headless Chrome session
 [stress:4] starting headless Chrome session
 [stress:5] starting headless Chrome session
-[stress:3] running desktop checks
-[desktop] checking keyboard interactions
-[stress:4] running desktop checks
-[desktop] checking keyboard interactions
 [stress:2] running desktop checks
 [desktop] checking keyboard interactions
 [stress:5] running desktop checks
 [desktop] checking keyboard interactions
 [stress:1] running desktop checks
 [desktop] checking keyboard interactions
+[stress:3] running desktop checks
+[desktop] checking keyboard interactions
+[stress:4] running desktop checks
+[desktop] checking keyboard interactions
 [desktop] keyboard interactions complete
 [desktop] starting built-in self-tests
 [desktop] keyboard interactions complete
@@ -53,21 +53,21 @@ test_headless_chrome_stress (__main__.HeadlessChromeStressTest.test_headless_chr
 [desktop] starting built-in self-tests
 [desktop] keyboard interactions complete
 [desktop] starting built-in self-tests
-[desktop] built-in self-tests passed
-[stress:5] completed
-[desktop] built-in self-tests passed
-[stress:3] completed
 [desktop] built-in self-tests passed
 [stress:2] completed
 [desktop] built-in self-tests passed
-[stress:4] completed
+[stress:5] completed
 [desktop] built-in self-tests passed
 [stress:1] completed
+[desktop] built-in self-tests passed
+[stress:3] completed
+[desktop] built-in self-tests passed
+[stress:4] completed
 [stress] all headless Chrome sessions passed
 ok
 
 ----------------------------------------------------------------------
-Ran 5 tests in 98.326s
+Ran 5 tests in 65.596s
 
 OK
 
