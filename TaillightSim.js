@@ -59,6 +59,7 @@
   let presencePingTimer=null;
   let suppressIndicatorAudio=false;
   let indicatorSoundMode=INDICATOR_SOUND_DEFAULT;
+  const audioCache={};
   const presenceDeviceId=(()=>{
     try{
       const stored=localStorage.getItem(PRESENCE_STORAGE_KEY);
@@ -204,8 +205,13 @@
     const source=INDICATOR_SOUND_FILES[fileKey];
     if(!source)return;
     try{
-      const audio=new Audio(source);
-      audio.preload='auto';
+      let audio=audioCache[fileKey];
+      if(!audio){
+        audio=new Audio(source);
+        audio.preload='auto';
+        audioCache[fileKey]=audio;
+      }
+      audio.currentTime=0;
       audio.play().catch(()=>{});
     }catch(_err){
       // Audio playback is best-effort.

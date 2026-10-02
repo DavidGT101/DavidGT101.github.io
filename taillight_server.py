@@ -113,7 +113,8 @@ class TaillightHTTPServer(ThreadingHTTPServer):
         with self._clients_lock:
             items = list(self._clients.items())
         for client_id, entry in items:
-            last_seen = float(entry.get("last_seen", 0.0))
+            last_seen_value = entry.get("last_seen")
+            last_seen = float(last_seen_value) if isinstance(last_seen_value, (int, float)) else 0.0
             age_seconds = max(0.0, now - last_seen)
             connected = bool(entry.get("connected", False))
             if not connected and age_seconds > 3600:
@@ -203,7 +204,8 @@ class TerminalCommandListener:
             ip = str(row["ip"])[:16]
             status = str(row["status"])[:7]
             page = str(row["page"])[:7]
-            age_seconds = int(float(row["age_seconds"]))
+            age_value = row["age_seconds"]
+            age_seconds = int(age_value) if isinstance(age_value, (int, float)) else 0
             print(f"{client_id:<22}  {ip:<16}  {status:<7}  {page:<7}  {age_seconds:>4}s ago")
 
     def _run(self) -> None:
@@ -366,7 +368,9 @@ class TaillightRequestHandler(SimpleHTTPRequestHandler):
         self._send_json({"ok": False, "error": "Unknown command endpoint."}, status=404)
 
     def end_headers(self) -> None:
-        self.send_header("Cache-Control", "no-store")
+        if self.headers.get("Cache-Control") is None:
+            cache_policy = "public, max-age=31536000, immutable" if self.path.startswith("/audio/") else "no-store"
+            self.send_header("Cache-Control", cache_policy)
         super().end_headers()
 
     def log_error(self, format: str, *args) -> None:  # noqa: A003
