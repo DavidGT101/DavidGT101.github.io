@@ -90,6 +90,11 @@ def wait_for_server(base_url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECOND
     raise RuntimeError(f"Timed out waiting for {health_url}") from last_error
 
 
+def cache_control_for(path: str) -> str | None:
+    with urlopen(f"{BASE_URL.rstrip('/')}/{path.lstrip('/')}", timeout=5) as response:
+        return response.headers.get("Cache-Control")
+
+
 def is_server_running(base_url: str) -> bool:
     try:
         wait_for_server(base_url, timeout_seconds=3)
@@ -423,6 +428,19 @@ def exercise_headless_chrome_stress() -> None:
     announce("[stress] all headless Chrome sessions passed")
 
 
+class CacheHeadersTest(unittest.TestCase):
+    def test_cache_headers_match_asset_policy(self) -> None:
+        announce("[cache] checking response cache headers")
+        self.assertEqual(cache_control_for("healthz"), "no-store")
+        for asset_path in ("TaillightSim.html", "TaillightSim.css", "TaillightSim.js"):
+            with self.subTest(asset=asset_path):
+                self.assertEqual(cache_control_for(asset_path), "no-store")
+        for audio_path in ("audio/T1.m4a", "audio/T2.m4a"):
+            with self.subTest(asset=audio_path):
+                self.assertEqual(cache_control_for(audio_path), "public, max-age=31536000, immutable")
+        announce("[cache] response cache headers passed")
+
+
 def make_browser_test_case(browser: str) -> tuple[type[unittest.TestCase], type[unittest.TestCase]]:
     class DesktopKeyboardReactionsTest(unittest.TestCase):
         @classmethod
@@ -480,6 +498,7 @@ def make_browser_test_case(browser: str) -> tuple[type[unittest.TestCase], type[
 def build_browser_suite(browsers: tuple[str, ...]) -> unittest.TestSuite:
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
+    suite.addTests(loader.loadTestsFromTestCase(CacheHeadersTest))
     for browser in browsers:
         desktop_case, mobile_case = make_browser_test_case(browser)
         suite.addTests(loader.loadTestsFromTestCase(desktop_case))
