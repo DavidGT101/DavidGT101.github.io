@@ -368,7 +368,8 @@ class TaillightRequestHandler(SimpleHTTPRequestHandler):
         self._send_json({"ok": False, "error": "Unknown command endpoint."}, status=404)
 
     def end_headers(self) -> None:
-        if self.headers.get("Cache-Control") is None:
+        headers = getattr(self, "headers", None)
+        if headers is not None and headers.get("Cache-Control") is None:
             cache_policy = "public, max-age=31536000, immutable" if self.path.startswith("/audio/") else "no-store"
             self.send_header("Cache-Control", cache_policy)
         super().end_headers()
