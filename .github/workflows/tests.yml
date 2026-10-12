@@ -25,6 +25,9 @@ permissions:
 jobs:
   selenium-smoke:
     runs-on: self-hosted
+    defaults:
+      run:
+        shell: pwsh
 
     steps:
       - name: Check out repository
@@ -37,43 +40,42 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        shell: pwsh
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
+          if (Test-Path requirements.txt) { python -m pip install -r requirements.txt }
 
       - name: Run Selenium smoke tests
         id: tests
         continue-on-error: true
-        shell: bash
         run: |
-          mkdir -p log
-          rm -f log/*.log
-          log_file="log/${GITHUB_SHA:0:7}.log"
+          New-Item -ItemType Directory -Force -Path log | Out-Null
+          Get-ChildItem -Path log -Filter *.log -File -ErrorAction SilentlyContinue | Remove-Item -Force
+          $sha = if ($env:GITHUB_SHA) { $env:GITHUB_SHA.Substring(0, [Math]::Min(7, $env:GITHUB_SHA.Length)) } else { "latest" }
+          $logFile = "log/$sha.log"
 
-          set +e
-          python selenium_taillight_smoke.py --headless --browsers chrome,firefox 2>&1 | tee "$log_file"
-          test_status=${PIPESTATUS[0]}
-          printf '\nTest exit code: %s\n' "$test_status" >> "$log_file"
-          exit "$test_status"
+          python selenium_taillight_smoke.py --headless --browsers chrome,firefox 2>&1 | Tee-Object -FilePath $logFile
+          $testStatus = $LASTEXITCODE
+          Add-Content -Path $logFile -Value "`nTest exit code: $testStatus"
+          exit $testStatus
 
       - name: Commit latest test log
         if: always() && github.event_name == 'push'
-        shell: pwsh
         run: |
+          git config --global --add safe.directory "*"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A log
 
-          if git diff --cached --quiet; then
-            echo "No test log changes to commit."
+          $diff = git diff --cached --name-only
+          if (-not $diff) {
+            Write-Host "No test log changes to commit."
             exit 0
-          fi
+          }
 
-          git commit -m "ci: update test log for ${GITHUB_SHA:0:7} [skip ci]"
+          $sha = if ($env:GITHUB_SHA) { $env:GITHUB_SHA.Substring(0, [Math]::Min(7, $env:GITHUB_SHA.Length)) } else { "latest" }
+          git commit -m "ci: update test log for $sha [skip ci]"
           git push
 
       - name: Fail workflow when tests fail
         if: steps.tests.outcome == 'failure'
-        shell: pwsh
         run: exit 1
