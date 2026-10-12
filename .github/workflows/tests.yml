@@ -37,7 +37,7 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        shell: bash
+        shell: pwsh
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
@@ -59,7 +59,7 @@ jobs:
 
       - name: Commit latest test log
         if: always() && github.event_name == 'push'
-        shell: bash
+        shell: pwsh
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -75,5 +75,5 @@ jobs:
 
       - name: Fail workflow when tests fail
         if: steps.tests.outcome == 'failure'
-        shell: bash
+        shell: pwsh
         run: exit 1
