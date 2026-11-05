@@ -73,6 +73,29 @@ If you are using the workspace virtual environment:
 
 Press `Ctrl+C` in the terminal to stop the server.
 
+### **Option 3: Desktop Electron App (Native Desktop)**
+
+Run the simulator as a native desktop application with dedicated application menus, keyboard shortcuts, and full screen support.
+
+1. Install dependencies (Node.js 18+ required):
+
+```powershell
+npm install
+```
+
+2. Launch the desktop app:
+
+```powershell
+npm start
+```
+
+3. Package into a standalone executable (optional):
+
+```powershell
+npm run pack   # Builds unpacked binary in dist/win-unpacked
+npm run dist   # Builds installer / portable executable
+```
+
 ## **✅ Automated Tests**
 
 GitHub Actions runs the Selenium smoke tests on Ubuntu for every push, pull request, and manual workflow dispatch. Pushes that only update `log/` are ignored to prevent the test-log commit from starting another run.
