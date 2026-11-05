@@ -8,6 +8,8 @@ on:
       - "**/*.html"
       - "**/*.css"
       - "**/*.js"
+      - "!node_modules/**"
+      - "!dist/**"
       - "!log/**"
   pull_request:
     paths:
@@ -16,6 +18,8 @@ on:
       - "**/*.html"
       - "**/*.css"
       - "**/*.js"
+      - "!node_modules/**"
+      - "!dist/**"
       - "!log/**"
   workflow_dispatch:
 
