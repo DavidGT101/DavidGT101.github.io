@@ -85,6 +85,7 @@
   }
 
   function postPresence(path,useBeacon=false){
+    if(window.location.protocol==='file:')return;
     const payload=buildPresencePayload();
     if(useBeacon&&navigator.sendBeacon){
       try{
@@ -850,6 +851,27 @@
       indicatorSoundMode=normalizeIndicatorSoundMode(e.target.value);
       indicatorSoundSelect.value=indicatorSoundMode;
       saveIndicatorSoundMode(indicatorSoundMode);
+    });
+  }
+  if(window.electronAPI&&typeof window.electronAPI.onMenuAction==='function'){
+    window.electronAPI.onMenuAction((action,data)=>{
+      if(action==='lockUnlock')lockUnlock();
+      else if(action==='signal')activate(data);
+      else if(action==='nextMode')changeMode();
+      else if(action==='setMode'){
+        if(typeof data==='number'&&data>=0&&data<MODES.length){
+          state.modeIdx=data;
+          setModeLabel();
+          if(state.on)clsAll(true);
+        }
+      }
+      else if(action==='toggleBrake'){
+        if(state.brakeActive)releaseBrakeToHazard();
+        else activateBrake();
+      }
+      else if(action==='toggleReverse')toggleReverse();
+      else if(action==='toggleUI')toggleUI();
+      else if(action==='selfTests')triggerSelfTests();
     });
   }
   setupTouchControls();
